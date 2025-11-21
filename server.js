@@ -1,6 +1,6 @@
-import express from "express";
-import fetch from "node-fetch";
-import cors from "cors";
+const express = require("express");
+const fetch = require("node-fetch");
+const cors = require("cors");
 
 const app = express();
 app.use(cors());
@@ -11,7 +11,6 @@ try {
 const videoUrl = req.body.url;
 const videoId = new URL(videoUrl).searchParams.get("v");
 
-```
 if (!videoId) {
   return res.status(400).json({ error: "No se pudo leer el ID del video" });
 }
@@ -27,14 +26,13 @@ const apiRes = await fetch(
 );
 
 const data = await apiRes.json();
-res.json(data);
-```
+return res.json(data);
 
 } catch (error) {
 console.error(error);
-res.status(500).json({ error: "Error en el servidor" });
+return res.status(500).json({ error: "Error en el servidor" });
 }
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🔥 API corriendo en el puerto ${PORT}`));
+app.listen(PORT, () => console.log(🔥 API corriendo en el puerto ${PORT}));
