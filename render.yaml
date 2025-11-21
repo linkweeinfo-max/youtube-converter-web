@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: youtube-converter-web
+    env: node
+    buildCommand: "npm install"
+    startCommand: "node server.js"
