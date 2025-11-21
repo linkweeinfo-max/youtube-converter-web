@@ -2,6 +2,7 @@
   "name": "youtube-converter",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "server.js",
   "engines": {
     "node": "20.x"
@@ -12,10 +13,9 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "ytdl-core": "^4.11.5"
-  }
+ }
 }
