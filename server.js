@@ -19,15 +19,6 @@ const PORT = process.env.PORT || 3000;
 // Carpeta donde Render permite escribir
 const outputFolder = "/tmp";
 
-// 🚀 Instalar yt-dlp automáticamente en Render
-exec("pip install yt-dlp", (err) => {
-  if (err) {
-    console.error("Error installing yt-dlp:", err);
-  } else {
-    console.log("yt-dlp installed successfully");
-  }
-});
-
 // =============================
 //     ENDPOINT DE CONVERSIÓN
 // =============================
@@ -74,3 +65,4 @@ app.post("/convert", (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
+
