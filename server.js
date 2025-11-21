@@ -1,66 +1,40 @@
-const express = require("express");
-const cors = require("cors");
-const ytdl = require("ytdl-core");
-const fs = require("fs");
-const path = require("path");
+import express from "express";
+import fetch from "node-fetch";
+import cors from "cors";
 
 const app = express();
-app.use(express.json());
 app.use(cors());
-
-// 🔓 Para evitar errores de CSP en Render
-app.use((req, res, next) => {
-  res.setHeader(
-    "Content-Security-Policy",
-    "default-src * 'self' 'unsafe-inline' 'unsafe-eval' data: blob:"
-  );
-  next();
-});
-
-// Servir carpeta "public" (frontend)
-app.use(express.static(path.join(__dirname, "public")));
-
-// Ruta principal "/"
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
-// Carpeta temporal permitida en Render
-const outputFolder = "/tmp";
-app.use(express.static(outputFolder));
-
-const PORT = process.env.PORT || 3000;
+app.use(express.json());
 
 app.post("/convert", async (req, res) => {
-  const { url, format = "mp3" } = req.body;
+try {
+const videoUrl = req.body.url;
+const videoId = new URL(videoUrl).searchParams.get("v");
 
-  if (!url) {
-    return res.status(400).json({ error: "No URL provided" });
+```
+if (!videoId) {
+  return res.status(400).json({ error: "No se pudo leer el ID del video" });
+}
+
+const apiRes = await fetch(
+  `https://youtube-mp36.p.rapidapi.com/dl?id=${videoId}`,
+  {
+    headers: {
+      "X-RapidAPI-Key": process.env.RAPID_KEY,
+      "X-RapidAPI-Host": "youtube-mp36.p.rapidapi.com"
+    }
   }
+);
 
-  try {
-    const timestamp = Date.now();
-    const filePath = `${outputFolder}/video_${timestamp}.${format}`;
+const data = await apiRes.json();
+res.json(data);
+```
 
-    const stream = ytdl(url, {
-      filter: format === "mp3" ? "audioonly" : "audioandvideo"
-    });
-
-    const file = fs.createWriteStream(filePath);
-    stream.pipe(file);
-
-    file.on("finish", () => {
-      const downloadUrl = `${req.protocol}://${req.get("host")}/video_${timestamp}.${format}`;
-      return res.json({ downloadUrl });
-    });
-
-    stream.on("error", () => {
-      return res.status(500).json({ error: "Failed to download" });
-    });
-
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
-  }
+} catch (error) {
+console.error(error);
+res.status(500).json({ error: "Error en el servidor" });
+}
 });
 
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`🔥 API corriendo en el puerto ${PORT}`));
