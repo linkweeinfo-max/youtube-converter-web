@@ -11,6 +11,7 @@ try {
 const videoUrl = req.body.url;
 const videoId = new URL(videoUrl).searchParams.get("v");
 
+```
 if (!videoId) {
   return res.status(400).json({ error: "No se pudo leer el ID del video" });
 }
@@ -27,6 +28,7 @@ const apiRes = await fetch(
 
 const data = await apiRes.json();
 return res.json(data);
+```
 
 } catch (error) {
 console.error(error);
@@ -35,4 +37,4 @@ return res.status(500).json({ error: "Error en el servidor" });
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(🔥 API corriendo en el puerto ${PORT}));
+app.listen(PORT, () => console.log(`API corriendo en el puerto ${PORT}`));
