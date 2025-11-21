@@ -7,6 +7,9 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+// 👇 Agregar esta línea para servir index.html
+app.use(express.static(__dirname));
+
 // Puerto para Render
 const PORT = process.env.PORT || 3000;
 
@@ -51,7 +54,6 @@ app.post("/convert", (req, res) => {
   });
 });
 
-// Iniciar servidor
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
