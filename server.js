@@ -7,15 +7,30 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// 👇 Agregar esta línea para servir index.html
+// Servir archivos estáticos (HTML, CSS, JS)
 app.use(express.static(__dirname));
+
+// Servir archivos generados en /tmp (MP3, MP4)
+app.use(express.static("/tmp"));
 
 // Puerto para Render
 const PORT = process.env.PORT || 3000;
 
-// Render solo permite guardar archivos en /tmp
+// Carpeta donde Render permite escribir
 const outputFolder = "/tmp";
 
+// 🚀 Instalar yt-dlp automáticamente en Render
+exec("pip install yt-dlp", (err) => {
+  if (err) {
+    console.error("Error installing yt-dlp:", err);
+  } else {
+    console.log("yt-dlp installed successfully");
+  }
+});
+
+// =============================
+//     ENDPOINT DE CONVERSIÓN
+// =============================
 app.post("/convert", (req, res) => {
   const { url, format = "mp3", quality = "best" } = req.body;
 
@@ -34,7 +49,7 @@ app.post("/convert", (req, res) => {
     cmd = `yt-dlp -f bestvideo+bestaudio --merge-output-format mp4 -o "${outputFile}" "${url}"`;
   }
 
-  console.log("Executing:", cmd);
+  console.log("Executing command:", cmd);
 
   exec(cmd, (error) => {
     if (error) {
@@ -43,17 +58,19 @@ app.post("/convert", (req, res) => {
     }
 
     const files = fs.readdirSync(outputFolder);
-    const resultFile = files.find(f => f.includes(timestamp));
+    const resultFile = files.find((f) => f.includes(timestamp));
 
     if (!resultFile) {
       return res.status(500).json({ error: "File not found" });
     }
 
+    // URL de descarga REAL
     const downloadUrl = `${req.protocol}://${req.get("host")}/${resultFile}`;
     return res.json({ downloadUrl });
   });
 });
 
+// Iniciar servidor
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
